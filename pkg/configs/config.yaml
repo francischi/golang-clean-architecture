@@ -1,0 +1,11 @@
+# url: 127.0.0.1
+# userName: root
+# password: 
+# dbname: golang_example
+# post: 3306
+
+# test-url: 127.0.0.1
+# test-userName: root
+# test-password: 
+# test-dbname: golang_example
+# test-post: 3306
