@@ -1,6 +1,8 @@
 # api document
 *this is an example for api document
 
+prefix : ```/api```
+
 ---
 ##　member
 

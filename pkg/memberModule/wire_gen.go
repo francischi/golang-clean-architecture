@@ -8,14 +8,14 @@ package memberModule
 
 import (
 	"golang/pkg/helpers"
-	"golang/pkg/repos"
+	"golang/pkg/repos/implement"
 )
 
 // Injectors from wire.go:
 
 func InitMemberController() *MemberController {
 	db := helpers.NewSqlSession()
-	memberRepo := repos.NewMemberRepo(db)
+	memberRepo := implement.NewMemberRepo(db)
 	memberService := NewMemberService(memberRepo)
 	memberController := NewMemberController(memberService)
 	return memberController

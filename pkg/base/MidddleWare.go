@@ -19,6 +19,7 @@ func (m *MiddleWare)SystemError(g *gin.Context , errorMsg string){
 func (m *MiddleWare)HandleError(g *gin.Context , err error){
 	statusCode := except.Error2StatusCode(err)
 	g.JSON(statusCode,gin.H{
+		"success":false,
 		"error_msg":err.Error(),
 		"result":"",
 	})

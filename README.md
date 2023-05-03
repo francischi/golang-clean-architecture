@@ -32,7 +32,7 @@
 dto實現與controller層的解偶，讓此服務不用關注協議部分、或使用何種框架，若
 後續專案架構變動(換框架 or 切分微服務)，都不會影響此業務邏輯。
 
-interface實現與repository的解偶，使用interface規範repository的func，讓service依賴於抽象而不是實作。
+interface實現與repository的解偶，使用interface規範repository的func，讓service依賴於抽象而不是實作，實現依賴反轉。
 
 參數檢查由dto private func實現，避免service內寫入過多檢查的程式碼。
 
@@ -40,7 +40,7 @@ service丟出之error盡量避免使用error.New()，因若使用error.New()，c
 status code 400，錯誤碼較不明確。
 
 error種類由 pkg/base/service中 import pkg/except中的error種類來定義，
-此設計能夠在多人開發時統一管理error種類並能夠更好的維護error轉換之status code。
+此方式能夠在多人開發時統一管理error種類並能夠更好的維護error轉換之status code。
 ```
 
 **repository**
@@ -52,7 +52,8 @@ error種類由 pkg/base/service中 import pkg/except中的error種類來定義�
 
 ***hint**
 ```
-* 定義錯誤類型，並定義特定錯誤轉換之status code會放在pkg/except/exception.go中。
+* 定義錯誤類型，並定義特定錯誤轉換之status code會放在pkg/except/exception.go中，讓middleware、controller、service的base class實作，
+  再藉由繼承調用這些error type。
 
 * 若有使用第三方API or IO相關操作(ex:mail、第三方金流..)，寫成獨立service放在pkg/common中，並使用依賴注入注進欲使用之service，
 ```
