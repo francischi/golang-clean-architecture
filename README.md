@@ -9,8 +9,9 @@
 ## **clean architecture**
 
 此架構符合clean architecture
-* 獨立於框架
 * 可測試
+* 獨立於框架
+* 獨立於通訊協議
 * 獨立於 UI
 * 獨立於 Database
   

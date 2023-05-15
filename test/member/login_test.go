@@ -1,6 +1,8 @@
 package member
 
-// mockgen -source="./pkg/repos/interfaces/MemberInterface.go" -destination="./test/member/MemberRepo.go"
+// go get github.com/golang/mock/gomock
+// go install github.com/golang/mock/mockgen
+// mockgen -source="./pkg/repos/interfaces/MemberInterface.go" -destination="./test/member/MemberRepoMock.go" -package="member"
 
 import (
 	// "fmt"
@@ -28,7 +30,7 @@ func createRepoReturn()(member models.MemberModel){
 func createLogInDto()(login dtos.LogInDto){
     var dto dtos.LogInDto
     dto.Account = "test@gmail.com"
-    dto.Password = "thisisfrank4"
+    dto.Password = "thisisfrank"
     return dto
 }
 
@@ -52,7 +54,7 @@ func TestMemberServiceLogIn(t *testing.T){
 
     logInDto := createLogInDto()
     token , err := memberService.LogIn(&logInDto)
-    if token !="" || err!=nil{
+    if token =="" || err!=nil{
         t.Errorf("errMessage:%s",err.Error())
     }
 }
