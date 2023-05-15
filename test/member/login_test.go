@@ -30,7 +30,7 @@ func createRepoReturn()(member models.MemberModel){
 func createLogInDto()(login dtos.LogInDto){
     var dto dtos.LogInDto
     dto.Account = "test@gmail.com"
-    dto.Password = "thisisfrank"
+    dto.Password = "thisisfrank4"
     return dto
 }
 
