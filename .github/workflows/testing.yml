@@ -16,3 +16,10 @@ jobs:
 
     - name: Test 
       run: go test -v ./unitTest/test/...
+
+    - name: Merge test -> main
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
