@@ -26,4 +26,4 @@ jobs:
         git config user.email "${{ github.actor }}@users.noreply.github.com"
         git checkout main
         git merge --no-ff "${{ github.ref }}"
-        git push origin main
+        git push 
