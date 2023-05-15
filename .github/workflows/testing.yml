@@ -18,8 +18,9 @@ jobs:
       run: go test -v ./unitTest/test/...
 
     - name: MergeToMain
-        uses: devmasx/merge-branch@master
+        uses: everlytic/branch-merge@1.1.2
         with:
-          type: now
-          target_branch: main
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ github.token }}
+          source_ref: ${{ github.ref }}
+          target_branch: 'main'
+          commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'
