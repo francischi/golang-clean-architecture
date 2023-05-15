@@ -2,7 +2,7 @@ package member
 
 // go get github.com/golang/mock/gomock
 // go install github.com/golang/mock/mockgen
-// mockgen -source="./pkg/repos/interfaces/MemberInterface.go" -destination="./test/member/MemberRepoMock.go" -package="member"
+// mockgen -source="./pkg/repos/interfaces/MemberInterface.go" -destination="./unitTest/mockRepos/MemberRepoMock.go" -package="mockRepos"
 
 import (
 	// "fmt"
@@ -10,6 +10,7 @@ import (
 	"golang/pkg/memberModule"
 	"golang/pkg/memberModule/dtos"
 	"golang/pkg/repos/models"
+    "golang/unitTest/mockRepos"
 	"github.com/golang/mock/gomock"
 )
 
@@ -34,8 +35,8 @@ func createLogInDto()(login dtos.LogInDto){
     return dto
 }
 
-func prepareMockRepo(controller *gomock.Controller) *MockMemberRepo {
-    memberRepo := NewMockMemberRepo(controller)
+func prepareMockRepo(controller *gomock.Controller) *mockRepos.MockMemberRepo {
+    memberRepo := mockRepos.NewMockMemberRepo(controller)
     email := "test@gmail.com"
     memberModel  := createRepoReturn()
     memberRepo.EXPECT().GetMemberByEmail(email).Return(memberModel , nil)
