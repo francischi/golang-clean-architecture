@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  test&autoMerge:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -19,11 +19,8 @@ jobs:
     - name: Test 
       run: go test -v ./unitTest/test/...
 
-    - name: Merge to main
-      if: ${{ github.event_name == 'push' }}
-      run: |
-        git config user.name "${{ github.actor }}"
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git checkout main
-        git merge --no-ff "${{ github.ref }}"
-        git push 
+    - id: automerge
+        name: automerge
+        uses: "pascalgn/automerge-action@v0.15.6"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
