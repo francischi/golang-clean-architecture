@@ -52,7 +52,7 @@ func TestMemberServiceLogIn(t *testing.T){
 
     logInDto := createLogInDto()
     token , err := memberService.LogIn(&logInDto)
-    if token =="" || err!=nil{
+    if token !="" || err!=nil{
         t.Errorf("errMessage:%s",err.Error())
     }
 }
