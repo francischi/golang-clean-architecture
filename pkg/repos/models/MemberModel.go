@@ -1,5 +1,7 @@
 package models
 
+import h "golang/pkg/helpers"
+
 const (
 	MEMBER_GENDER_MALE   = "MALE"
 	MEMBER_GENDER_FEMALE = "FEMALE"
@@ -19,6 +21,22 @@ type MemberModel struct {
 	CreateTime int    `gorm:"type:int(10);default:null"`
 }
 
-func (MemberModel) TableName() string {
+func (m *MemberModel) TableName() string {
 	return "member"
+}
+
+func (m *MemberModel)Check()(bool,string){
+	if h.CheckUuid(m.MemberId){
+		return false,"invalid uuid"
+	}
+	if len(m.Name) == 0{
+		return false,"invalid name"
+	}
+	if m.Gender != MEMBER_GENDER_MALE && m.Gender != MEMBER_GENDER_FEMALE {
+		return false,"invalid gender"
+	}
+	if h.IsValidEmail(m.Email){
+		return false,"invalid email"
+	}
+	return true ,""
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func createRepoReturn()(member models.MemberModel){
+func getMemberByEmailReturn()(member models.MemberModel){
     var model models.MemberModel
     model.Id = 1
     model.Email = "test@gmail.com"
@@ -28,7 +28,7 @@ func createRepoReturn()(member models.MemberModel){
     return model
 }
 
-func createLogInDto()(login dtos.LogInDto){
+func logInDto()(dtos.LogInDto){
     var dto dtos.LogInDto
     dto.Account = "test@gmail.com"
     dto.Password = "thisisfrank4"
@@ -38,12 +38,12 @@ func createLogInDto()(login dtos.LogInDto){
 func prepareMockRepo(controller *gomock.Controller) *mockRepos.MockMemberRepo {
     memberRepo := mockRepos.NewMockMemberRepo(controller)
     email := "test@gmail.com"
-    memberModel  := createRepoReturn()
+    memberModel  := getMemberByEmailReturn()
     memberRepo.EXPECT().GetMemberByEmail(email).Return(memberModel , nil)
     return memberRepo
 }
 
-func TestMemberServiceLogIn(t *testing.T){
+func TestLogIn(t *testing.T){
     controller := gomock.NewController(t)
     defer controller.Finish()
 
@@ -53,7 +53,7 @@ func TestMemberServiceLogIn(t *testing.T){
         MemberRepo: memberRepo,
     }
 
-    logInDto := createLogInDto()
+    logInDto := logInDto()
     token , err := memberService.LogIn(&logInDto)
     if token =="" || err!=nil{
         t.Errorf("errMessage:%s",err.Error())

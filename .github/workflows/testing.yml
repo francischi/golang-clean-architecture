@@ -17,9 +17,9 @@ jobs:
     - name: Test 
       run: go test -v ./unitTest/test/...
 
-    - name: MergeToMain
-      uses: devmasx/merge-branch@master
-      with:
-        type: now
-        target_branch: main
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+    # - name: MergeToMain
+    #   uses: devmasx/merge-branch@master
+    #   with:
+    #     type: now
+    #     target_branch: main
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
