@@ -26,7 +26,7 @@ func (m *MemberModel) TableName() string {
 }
 
 func (m *MemberModel)Check()(bool,string){
-	if h.CheckUuid(m.MemberId){
+	if !h.CheckUuid(m.MemberId){
 		return false,"invalid uuid"
 	}
 	if len(m.Name) == 0{
@@ -35,7 +35,7 @@ func (m *MemberModel)Check()(bool,string){
 	if m.Gender != MEMBER_GENDER_MALE && m.Gender != MEMBER_GENDER_FEMALE {
 		return false,"invalid gender"
 	}
-	if h.IsValidEmail(m.Email){
+	if !h.IsValidEmail(m.Email){
 		return false,"invalid email"
 	}
 	return true ,""

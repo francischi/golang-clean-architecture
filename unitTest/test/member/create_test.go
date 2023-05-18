@@ -2,13 +2,15 @@ package member
 
 import (
 	// "fmt"
+	"errors"
+	"testing"
 	"golang/pkg/memberModule"
 	"golang/pkg/memberModule/dtos"
 	"golang/pkg/repos/models"
 	"golang/unitTest/mockRepos"
-	"testing"
-	"github.com/stretchr/testify/assert"
+
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreate(t *testing.T){
@@ -23,7 +25,7 @@ func TestCreate(t *testing.T){
 		func(input models.MemberModel) interface{}{
 			checked , errMsg := input.Check()
 			if checked==false{
-				return errMsg
+				return errors.New(errMsg)
 			}
 			return nil
 		},
@@ -45,21 +47,10 @@ func TestCreate(t *testing.T){
 		assert.NoError(t, err)
 	})
 
-	t.Run("invalid name", func(t *testing.T) {
+	t.Run("name required", func(t *testing.T) {
 
 		createDto := dtos.CreateMemberDto{
 			Email : "test@gmail.com",
-			Gender : "FEMALE",
-			Password : "thisisfrank",
-		}
-
-		err := memberService.Create(&createDto)
-		assert.Error(t, err)
-	})
-
-	t.Run("required email", func(t *testing.T) {
-		createDto := dtos.CreateMemberDto{
-			Name : "frank",
 			Gender : "FEMALE",
 			Password : "thisisfrank",
 		}
@@ -80,7 +71,30 @@ func TestCreate(t *testing.T){
 		assert.Error(t, err)
 	})
 
-	t.Run("invalid password", func(t *testing.T) {
+	t.Run("email required", func(t *testing.T) {
+		createDto := dtos.CreateMemberDto{
+			Name : "frank",
+			Gender : "FEMALE",
+			Password : "thisisfrank",
+		}
+
+		err := memberService.Create(&createDto)
+		assert.Error(t, err)
+	})
+
+	t.Run("invalid gender", func(t *testing.T) {
+		createDto := dtos.CreateMemberDto{
+			Name : "frank",
+			Gender: "FEEE",
+			Email : "test@gmail.com",
+			Password : "thisisfrank",
+		}
+
+		err := memberService.Create(&createDto)
+		assert.Error(t, err)
+	})
+
+	t.Run("gender required", func(t *testing.T) {
 		createDto := dtos.CreateMemberDto{
 			Name : "frank",
 			Email : "test@gmail.com",
