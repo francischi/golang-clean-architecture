@@ -11,6 +11,11 @@ func InitEnvSetting()(err error){
     return error
 }
 
+func InitTestEnvSetting(envPath string)(err error){
+    error := godotenv.Load(envPath)
+    return error
+}
+
 func GetEnvStr(key string) (string) {
     v := os.Getenv(key)
     return v

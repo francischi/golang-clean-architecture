@@ -62,6 +62,9 @@ func (s *MemberService) LogIn(dto *dtos.LogInDto)(token string ,err error){
 	}
 	var jwtToken helpers.JwtToken
 	token,err = jwtToken.Create(memberModel.MemberId , memberModel.Name)
+	if err != nil{
+		return "",err
+	}
 	return token , nil
 }
 
