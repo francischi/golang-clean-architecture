@@ -12,6 +12,7 @@ import (
 	"golang/pkg/repos/models"
     "golang/unitTest/mockRepos"
 	"github.com/golang/mock/gomock"
+    "github.com/stretchr/testify/assert"
 )
 
 func getMemberByEmailReturn()(member models.MemberModel){
@@ -28,18 +29,11 @@ func getMemberByEmailReturn()(member models.MemberModel){
     return model
 }
 
-func logInDto()(dtos.LogInDto){
-    var dto dtos.LogInDto
-    dto.Account = "test@gmail.com"
-    dto.Password = "thisisfrank4"
-    return dto
-}
-
 func prepareMockRepo(controller *gomock.Controller) *mockRepos.MockMemberRepo {
     memberRepo := mockRepos.NewMockMemberRepo(controller)
     email := "test@gmail.com"
     memberModel  := getMemberByEmailReturn()
-    memberRepo.EXPECT().GetMemberByEmail(email).Return(memberModel , nil)
+    memberRepo.EXPECT().GetMemberByEmail(email).Return(memberModel , nil).AnyTimes()
     return memberRepo
 }
 
@@ -53,9 +47,63 @@ func TestLogIn(t *testing.T){
         MemberRepo: memberRepo,
     }
 
-    logInDto := logInDto()
-    token , err := memberService.LogIn(&logInDto)
-    if token =="" || err!=nil{
-        t.Errorf("errMessage:%s",err.Error())
-    }
+    t.Run("success" , func(t *testing.T) {
+        logInDto := dtos.LogInDto{
+            Account : "test@gmail.com",
+            Password : "thisisfrank4",
+        }
+        token , err := memberService.LogIn(&logInDto)
+        assert.NoError(t, err)
+        assert.NotEmpty(t , token)
+    })
+
+    t.Run("account required" , func(t *testing.T) {
+        logInDto := dtos.LogInDto{
+            Account : "",
+            Password : "thisisfrank4",
+        }
+        token , err := memberService.LogIn(&logInDto)
+        assert.Error(t, err)
+        assert.Empty(t , token)
+    })
+
+    t.Run("invalid account" , func(t *testing.T) {
+        logInDto := dtos.LogInDto{
+            Account : "test*gmail.com",
+            Password : "thisisfrank4",
+        }
+        token , err := memberService.LogIn(&logInDto)
+        assert.Error(t, err)
+        assert.Empty(t , token)
+    })
+
+    t.Run("password required" , func(t *testing.T) {
+        logInDto := dtos.LogInDto{
+            Account : "test@gmail.com",
+            Password : "",
+        }
+        token , err := memberService.LogIn(&logInDto)
+        assert.Error(t, err)
+        assert.Empty(t , token)
+    })
+
+    t.Run("invalid password" , func(t *testing.T) {
+        logInDto := dtos.LogInDto{
+            Account : "test@gmail.com",
+            Password : "this",
+        }
+        token , err := memberService.LogIn(&logInDto)
+        assert.Error(t, err)
+        assert.Empty(t , token)
+    })
+
+    t.Run("password not matched" , func(t *testing.T) {
+        logInDto := dtos.LogInDto{
+            Account : "test@gmail.com",
+            Password : "thisisntfrank",
+        }
+        token , err := memberService.LogIn(&logInDto)
+        assert.Error(t, err)
+        assert.Empty(t , token)
+    })
 }
