@@ -9,9 +9,9 @@
 ## **clean architecture**
 
 此架構符合clean architecture
-* 獨立於框架
 * 可測試
-* 獨立於 UI
+* 獨立於框架
+* 獨立於通訊協議
 * 獨立於 Database
   
 此架構以domain (module)來區分資料夾，並主要將程式碼分成**controller**、**service**、**repository**三部分，並使用依賴注入進行建構，能夠符合**關注點分離原則**，
