@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - unitTest
+      - main
 jobs:
   CI:
     runs-on: ubuntu-latest
