@@ -6,7 +6,6 @@ import (
 	"golang/pkg/base"
 	"golang/pkg/helpers"
 	"golang/pkg/memberModule/dtos"
-	impl "golang/pkg/repos/implement"
 	"golang/pkg/repos/interfaces"
 	"golang/pkg/repos/models"
 
@@ -18,7 +17,7 @@ type MemberService struct {
 	MemberRepo interfaces.MemberRepo
 }
 
-func NewMemberService(memberRepo *impl.MemberRepo) *MemberService{
+func NewMemberService(memberRepo interfaces.MemberRepo) *MemberService{
 	var MemberService MemberService
 	MemberService.MemberRepo = memberRepo
 

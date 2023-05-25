@@ -15,7 +15,7 @@ func SetRoute(g *gin.Engine ,baseGroup string){
 		func(ctx *gin.Context){InitMemberController().LogIn(ctx)},
 	)
 	memberGroup.PATCH("/password" , 
-		func(ctx *gin.Context) {mw.InitJwtMiddleWare().ConfirmToken(ctx)} , 
-		func(ctx *gin.Context) {InitMemberController().ChangePwd(ctx)},
+		func(ctx *gin.Context){mw.InitJwtMiddleWare().ConfirmToken(ctx)} , 
+		func(ctx *gin.Context){InitMemberController().ChangePwd(ctx)},
 	)
 }
