@@ -1,4 +1,4 @@
-package helpers
+package tokenModule
 
 import (
 	// "fmt"
@@ -8,10 +8,14 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
-	// "golang/pkg/except"
+	"golang/pkg/helpers"
 )
 
-type JwtToken struct{
+type TokenService struct{
+}
+
+func NewTokenService() *TokenService{
+	return &TokenService{}
 }
 
 type payload struct{
@@ -25,7 +29,7 @@ type header struct{
 	Alg string `json:"alg"`
 }
 
-func (t *JwtToken) Create(memberId string , name string)(string,error){
+func (t *TokenService) Create(memberId string , name string)(string,error){
 	header := header{
 		Typ:"JWT",
 		Alg: "HS256",
@@ -38,7 +42,7 @@ func (t *JwtToken) Create(memberId string , name string)(string,error){
 	payload := payload{
 		MemberId:memberId,
 		Name : name,
-		TimeStamp : GetTimeStamp(),
+		TimeStamp : helpers.GetTimeStamp(),
 	}
 	
 	payloadJson,err := json.Marshal(payload)
@@ -58,17 +62,17 @@ func (t *JwtToken) Create(memberId string , name string)(string,error){
 	return base64UrlHeaderJson + "." + base64UrlPayloadJson + "." + base64Signature , nil
 }
 
-func (t *JwtToken) createBase64(item []byte)string{
+func (t *TokenService) createBase64(item []byte)string{
 	encodedData := base64.RawStdEncoding.EncodeToString(item)
 	return encodedData
 }
 
-func (t *JwtToken) createUrlBase64(item []byte)string{
+func (t *TokenService) createUrlBase64(item []byte)string{
 	encodedData := base64.RawURLEncoding.EncodeToString(item)
 	return encodedData
 }
 
-func (t *JwtToken) decodeUrlBase64(item string)(string,error){
+func (t *TokenService) decodeUrlBase64(item string)(string,error){
 	decodeBytes,err := base64.RawURLEncoding.DecodeString(item)
 	if err!=nil{
 		return "",err
@@ -76,30 +80,30 @@ func (t *JwtToken) decodeUrlBase64(item string)(string,error){
 	return string(decodeBytes),nil
 }
 
-func (t *JwtToken) createSign(header string ,paylaod string , key string)[]byte {
+func (t *TokenService) createSign(header string ,paylaod string , key string)[]byte {
 	byteKey := []byte(key)
 	h := hmac.New(sha256.New , byteKey)
 	h.Write([]byte(header+"."+paylaod))
 	return h.Sum(nil)
 }
 
-func (t *JwtToken) getSecretKey()(string,error){
-	key := GetEnvStr("jwt.key")
+func (t *TokenService) getSecretKey()(string,error){
+	key := helpers.GetEnvStr("jwt.key")
 	if len(key) == 0{
 		return "",errors.New("env_setting_error")
 	}
 	return key,nil
 }
 
-func (t *JwtToken) getExpireTime()(int ,error){
-	expireTime ,err := GetEnvInt("jwt.expireTime")
+func (t *TokenService) getExpireTime()(int ,error){
+	expireTime ,err := helpers.GetEnvInt("jwt.expireTime")
 	if err!=nil{
 		return 0,errors.New("jwtExpireTime missing")
 	}
 	return expireTime,nil
 }
 
-func (t *JwtToken) IsValidJwt(jwtToken string) (bool,error) {
+func (t *TokenService) IsValidJwt(jwtToken string) (bool,error) {
 	splitedToken := strings.Split(jwtToken,".")
 	if len(splitedToken)!=3{
 		return false,nil
@@ -121,7 +125,7 @@ func (t *JwtToken) IsValidJwt(jwtToken string) (bool,error) {
 	return true,nil
 }
 
-func (t *JwtToken) IsJwtInTime(token string)(bool,error){
+func (t *TokenService) IsJwtInTime(token string)(bool,error){
 	
 	expireTime , err := t.getExpireTime()
 	if err!=nil{
@@ -141,7 +145,7 @@ func (t *JwtToken) IsJwtInTime(token string)(bool,error){
 		return false,err
 	}
 
-	if GetTimeStamp() - payload.TimeStamp > expireTime*60{
+	if helpers.GetTimeStamp() - payload.TimeStamp > expireTime*60{
 		return false,nil
 	}
 	return true,nil

@@ -8,6 +8,7 @@ import (
 	"golang/pkg/memberModule/dtos"
 	"golang/pkg/repos/interfaces"
 	"golang/pkg/repos/models"
+	"golang/pkg/tokenModule"
 
 	"gorm.io/gorm"
 )
@@ -15,12 +16,13 @@ import (
 type MemberService struct {
 	base.Service
 	MemberRepo interfaces.MemberRepo
+	TokenService *tokenModule.TokenService
 }
 
-func NewMemberService(memberRepo interfaces.MemberRepo) *MemberService{
+func NewMemberService(memberRepo interfaces.MemberRepo ,tokenService *tokenModule.TokenService) *MemberService{
 	var MemberService MemberService
 	MemberService.MemberRepo = memberRepo
-
+	MemberService.TokenService = tokenService
 	return &MemberService
 }
 
@@ -59,8 +61,7 @@ func (s *MemberService) LogIn(dto *dtos.LogInDto)(token string ,err error){
 	if hashedPassword != memberModel.Password{
 		return "",s.InvalidArgument("password_not_match")
 	}
-	var jwtToken helpers.JwtToken
-	token,err = jwtToken.Create(memberModel.MemberId , memberModel.Name)
+	token,err = s.TokenService.Create(memberModel.MemberId , memberModel.Name)
 	if err != nil{
 		return "",err
 	}

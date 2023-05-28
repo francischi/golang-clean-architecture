@@ -7,8 +7,11 @@
 package memberModule
 
 import (
+	"github.com/google/wire"
 	"golang/pkg/helpers"
 	"golang/pkg/repos/implement"
+	"golang/pkg/repos/interfaces"
+	"golang/pkg/tokenModule"
 )
 
 // Injectors from wire.go:
@@ -16,7 +19,12 @@ import (
 func InitMemberController() *MemberController {
 	db := helpers.NewSqlSession()
 	memberRepo := implement.NewMemberRepo(db)
-	memberService := NewMemberService(memberRepo)
+	tokenService := tokenModule.NewTokenService()
+	memberService := NewMemberService(memberRepo, tokenService)
 	memberController := NewMemberController(memberService)
 	return memberController
 }
+
+// wire.go:
+
+var MemberRepo = wire.NewSet(implement.NewMemberRepo, wire.Bind(new(interfaces.MemberRepo), new(*implement.MemberRepo)))

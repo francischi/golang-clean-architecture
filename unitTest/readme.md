@@ -6,7 +6,7 @@
 
 ## start
 ```
-go test -v ./unitTest/test
+go test -v ./unitTest/test/...
 ```
 
 ---
@@ -30,4 +30,4 @@ go test -v ./unitTest/test
 
 ## setting
 將.env.test設定檔放置於 /unitTest 底下
-在每個testing Module中，皆須放入setting_test.go，此檔案會在測試開始前設定環境變數(.env.test)。
+在每個testing Module中，皆須放入setting_test.go，此檔案會在測試開始前載入環境變數(.env.test)。

@@ -2,26 +2,26 @@ package middleWare
 
 import (
 	// "fmt"
-	"golang/pkg/helpers"
 	"golang/pkg/base"
 	"github.com/gin-gonic/gin"
+	"golang/pkg/tokenModule"
 )
 
 func InitJwtMiddleWare()(middleWare *JwtMiddleWare){
+
 	var JwtMiddleWare JwtMiddleWare
  	return &JwtMiddleWare
 }
 
 type JwtMiddleWare struct {
 	base.MiddleWare
+	tokenService tokenModule.TokenService
 }
 
 func (m *JwtMiddleWare) ConfirmToken(g *gin.Context){
 	jwtToken := g.Request.Header["Bearer-Token"][0]
 
-	var token helpers.JwtToken
-
-	val,err := token.IsValidJwt(jwtToken)
+	val,err  := m.tokenService.IsValidJwt(jwtToken)
 	if err!=nil{
 		m.SystemError(g,err.Error())
 		return
@@ -31,7 +31,7 @@ func (m *JwtMiddleWare) ConfirmToken(g *gin.Context){
 		return
 	}
 
-	val,err = token.IsJwtInTime(jwtToken)
+	val,err  = m.tokenService.IsJwtInTime(jwtToken)
 	if err!=nil{
 		m.SystemError(g,err.Error())
 		return

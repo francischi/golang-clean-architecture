@@ -9,6 +9,7 @@ import (
     "testing"
 	"golang/pkg/memberModule"
 	"golang/pkg/memberModule/dtos"
+    "golang/pkg/tokenModule"
 	"golang/pkg/repos/models"
     "golang/unitTest/mockRepos"
 	"github.com/golang/mock/gomock"
@@ -43,9 +44,11 @@ func TestLogIn(t *testing.T){
 
     memberRepo := prepareMockRepo(controller)
 
-    memberService := memberModule.MemberService{
-        MemberRepo: memberRepo,
-    }
+    // memberService := memberModule.MemberService{
+    //     MemberRepo: memberRepo,
+    // }
+    tokenService := tokenModule.NewTokenService()
+    memberService := memberModule.NewMemberService(memberRepo,tokenService)
 
     t.Run("success" , func(t *testing.T) {
         logInDto := dtos.LogInDto{
