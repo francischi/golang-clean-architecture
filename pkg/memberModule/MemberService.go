@@ -4,7 +4,7 @@ import (
 	// "fmt"
 	"errors"
 	"golang/pkg/base"
-	"golang/pkg/helpers"
+	h "golang/pkg/helpers"
 	"golang/pkg/memberModule/dtos"
 	"golang/pkg/repos/interfaces"
 	"golang/pkg/repos/models"
@@ -34,13 +34,13 @@ func (s *MemberService)Create(dto *dtos.CreateMemberDto)(err error){
 		return s.InvalidArgument("account_existed")
 	}
 	MemberModel := models.MemberModel{
-		MemberId : helpers.CreateUuid(),
+		MemberId : h.CreateUuid(),
 		Name : dto.Name,
 		Gender: dto.Gender,
-		Password : helpers.GetSHA256HashCode(dto.Password),
+		Password : h.GetSHA256HashCode(dto.Password),
 		Email: dto.Email,
 		IsOnline: models.MEMBER_OFFLINE,
-		CreateTime : helpers.GetTimeStamp(),
+		CreateTime : h.GetTimeStamp(),
 	}
 	error := s.MemberRepo.Create(MemberModel)
 
@@ -57,7 +57,7 @@ func (s *MemberService) LogIn(dto *dtos.LogInDto)(token string ,err error){
 		return "",s.InvalidArgument("no_matched_account")
 	}
 
-	hashedPassword := helpers.GetSHA256HashCode(dto.Password)
+	hashedPassword := h.GetSHA256HashCode(dto.Password)
 	if hashedPassword != memberModel.Password{
 		return "",s.InvalidArgument("password_not_match")
 	}
@@ -78,27 +78,30 @@ func (s *MemberService) ChangePwd(dto *dtos.ChangePwdDto)(err error){
 
 	memberId := dto.MemberId
 	memberModel ,err:= s.MemberRepo.GetMember(memberId)
-	
+
+	if errors.Is(err, gorm.ErrRecordNotFound){
+		return s.InvalidArgument("no_matched_account")
+	}
 	if err!=nil{
-		return s.InvalidArgument("member_repo_error")
+		return s.SystemError("member_repo_error")
 	}
 	if memberModel.Id==0{
-		return s.InvalidArgument("no_matched_member_id")
+		return s.InvalidArgument("no_matched_account")
 	}
 
 	if !s.confirmOldPwd(&dto.OldPassword ,&memberModel.Password){
 		return s.InvalidArgument("old_password_not_match")
 	}
 
-	hashNewPwd := helpers.GetSHA256HashCode(dto.NewPassword) 
+	hashNewPwd := h.GetSHA256HashCode(dto.NewPassword) 
 	
 	if err := s.MemberRepo.ChangePwd(memberId ,hashNewPwd);err!=nil{
-		return s.InvalidArgument("old_password_not_match")
+		return s.SystemError("member_repo_error")
 	}
 	return nil
 }
 
 func (s *MemberService) confirmOldPwd(pwd *string , oldPwd *string)(bool){
-	hashPassword := helpers.GetSHA256HashCode(*pwd)
+	hashPassword := h.GetSHA256HashCode(*pwd)
 	return hashPassword == *oldPwd
 }
