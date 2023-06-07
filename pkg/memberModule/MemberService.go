@@ -2,15 +2,12 @@ package memberModule
 
 import (
 	// "fmt"
-	"errors"
 	"golang/pkg/base"
 	h "golang/pkg/helpers"
 	"golang/pkg/memberModule/dtos"
 	"golang/pkg/repos/interfaces"
 	"golang/pkg/repos/models"
 	"golang/pkg/tokenModule"
-
-	"gorm.io/gorm"
 )
 
 type MemberService struct {
@@ -53,8 +50,8 @@ func (s *MemberService) LogIn(dto *dtos.LogInDto)(token string ,err error){
 	}
 	memberModel ,err:= s.MemberRepo.GetMemberByEmail(dto.Account)
 
-	if errors.Is(err, gorm.ErrRecordNotFound){
-		return "",s.InvalidArgument("no_matched_account")
+	if err!=nil{
+		return "",err
 	}
 
 	hashedPassword := h.GetSHA256HashCode(dto.Password)
@@ -79,11 +76,8 @@ func (s *MemberService) ChangePwd(dto *dtos.ChangePwdDto)(err error){
 	memberId := dto.MemberId
 	memberModel ,err:= s.MemberRepo.GetMember(memberId)
 
-	if errors.Is(err, gorm.ErrRecordNotFound){
-		return s.InvalidArgument("no_matched_account")
-	}
 	if err!=nil{
-		return s.SystemError("member_repo_error")
+		return err
 	}
 	if memberModel.Id==0{
 		return s.InvalidArgument("no_matched_account")
@@ -96,7 +90,7 @@ func (s *MemberService) ChangePwd(dto *dtos.ChangePwdDto)(err error){
 	hashNewPwd := h.GetSHA256HashCode(dto.NewPassword) 
 	
 	if err := s.MemberRepo.ChangePwd(memberId ,hashNewPwd);err!=nil{
-		return s.SystemError("member_repo_error")
+		return err
 	}
 	return nil
 }
