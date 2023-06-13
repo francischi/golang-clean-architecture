@@ -19,6 +19,11 @@ type JwtMiddleWare struct {
 }
 
 func (m *JwtMiddleWare) ConfirmToken(g *gin.Context){
+	header := g.Request.Header["Bearer-Token"]
+	if len(header)==0{
+		m.InvaliAugument(g,"token_required")
+		return
+	}
 	jwtToken := g.Request.Header["Bearer-Token"][0]
 
 	val,err  := m.tokenService.IsValidJwt(jwtToken)
