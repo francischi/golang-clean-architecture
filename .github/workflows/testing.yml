@@ -1,56 +1,27 @@
 name: Build and Test
-# on:
-#   push:
-#     branches:
-#       - unitTest
-#       - main
-# jobs:
-#   CI:
-#     runs-on: ubuntu-latest
-#     steps:
-#     - uses: actions/checkout@v3
-
-#     - name: Set up Go
-#       uses: actions/setup-go@v3
-#       with:
-#         go-version: 1.18
-
-#     - name: Test 
-#       if: "!contains(github.event.head_commit.message, '--skip-unitTest')"
-#       run: go test -v ./unitTest/test/...
-
-#     # - name: MergeToMain
-#     #   uses: devmasx/merge-branch@master
-#     #   with:
-#     #     type: now
-#     #     target_branch: main
-#     #     github_token: ${{ secrets.GITHUB_TOKEN }}
-
 on:
   push:
     branches:
-    - main
-
-
+      - unitTest
+      - main
 jobs:
-  deploy:
+  CI:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Install SSH client
-      run: sudo apt-get install -y ssh
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
 
-    - name: Set up SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.VEDAN_OFFICIAL_PEM }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H 104.199.164.75 >> ~/.ssh/known_hosts
+    - name: Test 
+      if: "!contains(github.event.head_commit.message, '--skip-unitTest')"
+      run: go test -v ./unitTest/test/...
 
-    - name: Deploy to GCP
-      run: |
-        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no vendan-shop@104.199.164.75 "cd /var/www && sudo git clone https://github.com/francischi/golang-clean-architecture.git"
-        echo "project pull success"
+    # - name: MergeToMain
+    #   uses: devmasx/merge-branch@master
+    #   with:
+    #     type: now
+    #     target_branch: main
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
